@@ -46,7 +46,7 @@ To build the Java code:
 
 This will build for both the x64 and x86 architecture for your platform. To cross compile for ARM, do the following:
 ```
-./gradlew build -Parm -PcompilerPrefix=arm-linux-gnueabi
+./gradlew build -Parm -PcompilerPrefix=arm-linux-gnueabi-
 ./gradlew assemble
 ```
 

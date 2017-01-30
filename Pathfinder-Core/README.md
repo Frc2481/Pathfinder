@@ -47,7 +47,11 @@ int length = candidate.length;
 Segment *trajectory = malloc(length * sizeof(Segment));
 
 // Generate the trajectory
-pathfinder_generate(&candidate, trajectory);
+int result = pathfinder_generate(&candidate, trajectory);
+if (result < 0) {
+    // An error occured
+    printf("Uh-Oh! Trajectory could not be generated!\n");
+}
 ```
 
 ### Using the Segments

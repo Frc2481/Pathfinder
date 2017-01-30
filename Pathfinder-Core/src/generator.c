@@ -42,7 +42,8 @@ int pathfinder_generate(TrajectoryCandidate *c, Segment *segments) {
     Spline *splines = (c->saptr);
     double *splineLengths = (c->laptr);
     
-    pf_trajectory_create(c->info, c->config, segments);
+    int trajectory_status = pf_trajectory_create(c->info, c->config, segments);
+    if (trajectory_status < 0) return trajectory_status;
     
     int spline_i = 0;
     double spline_pos_initial = 0, splines_complete = 0;

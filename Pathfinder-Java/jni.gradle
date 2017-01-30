@@ -62,13 +62,24 @@ model {
                     dependsOn jniHeaders
                     def javahome = org.gradle.internal.jvm.Jvm.current().javaHome
                     
-                    cCompiler.args '-I', "${javahome}/include"
-                    if (targetPlatform.operatingSystem.windows)
-                        cCompiler.args '-I', "${javahome}/include/win32"
-                    else if (targetPlatform.operatingSystem.macOsX)
-                        cCompiler.args '-I', "${javahome}/include/darwin"
-                    else if (targetPlatform.operatingSystem.linux)
-                        cCompiler.args '-I', "${javahome}/include/linux"
+                    if (toolChain in VisualCpp) {
+                        cCompiler.args "-I${javahome}/include"
+                        if (targetPlatform.operatingSystem.windows)
+                            cCompiler.args "-I${javahome}/include/win32"
+                        else if (targetPlatform.operatingSystem.macOsX)
+                            cCompiler.args "-I${javahome}/include/darwin"
+                        else if (targetPlatform.operatingSystem.linux)
+                            cCompiler.args "-I${javahome}/include/linux"
+                    } else {
+                        cCompiler.args '-I', "${javahome}/include"
+                        if (targetPlatform.operatingSystem.windows)
+                            cCompiler.args '-I', "${javahome}/include/win32"
+                        else if (targetPlatform.operatingSystem.macOsX)
+                            cCompiler.args '-I', "${javahome}/include/darwin"
+                        else if (targetPlatform.operatingSystem.linux)
+                            cCompiler.args '-I', "${javahome}/include/linux"
+                    }
+                    
                     // cCompiler.args << '-L"' + javahome + '/lib"'
                     
                     if (isArm) {

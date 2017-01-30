@@ -26,3 +26,5 @@ Pathfinder-Core/build/
 .gradle/
 out/
 .idea
+
+/test/

@@ -78,6 +78,13 @@ SWERVE_MODE getSwerveMode(JNIEnv *env, jobject obj) {
     return mode;
 }
 
+jint throwGenerationException(JNIEnv *env) {
+    jclass exClass;
+    char *className = "jaci/pathfinder/Pathfinder$GenerationException";
+    exClass = (*env)->FindClass(env, className);
+    return (*env)->ThrowNew(env, exClass, "The trajectory provided was invalid! Invalid trajectory could not be generated");
+}
+
 /*
  * Class:     jaci_pathfinder_PathfinderJNI
  * Method:    generateTrajectory
@@ -114,7 +121,11 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_generateTrajec
     // Segment segs[len];
     Segment *segs = malloc(len * sizeof(Segment));
     
-    pathfinder_generate(&cd, segs);
+    int result = pathfinder_generate(&cd, segs);
+    
+    if (result < 0) {
+        return throwGenerationException(env);
+    }
     
     jclass cls = (*env)->FindClass(env, "jaci/pathfinder/Trajectory$Segment");
     jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(DDDDDDDD)V");

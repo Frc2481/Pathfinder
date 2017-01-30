@@ -82,4 +82,13 @@ public class Pathfinder {
         return new Trajectory(PathfinderJNI.trajectoryDeserializeCSV(file.getAbsolutePath()));
     }
 
+    /**
+     * Thrown when a Trajectory could not be generated for an unknown reason.
+     */
+    public static class GenerationException extends Exception {
+        public GenerationException(String message) {
+            super(message);
+        }
+    }
+
 }

@@ -1,3 +1,4 @@
+import org.gradle.internal.os.OperatingSystem
 ext.isArm = hasProperty("arm")
 def compilerPrefix = project.hasProperty('compilerPrefix') ? project.compilerPrefix : 'arm-frc-linux-gnueabi-'
 
@@ -21,6 +22,35 @@ subprojects {
             }
             
             toolChains {
+                visualCpp(VisualCpp) {
+                    if (OperatingSystem.current().isWindows()) {
+                        // Taken from nt-core, fixes VS2015 compilation issues 
+
+                        // Workaround for VS2015 adapted from https://github.com/couchbase/couchbase-lite-java-native/issues/23
+                        def VS_2015_INCLUDE_DIR = "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt"
+                        def VS_2015_LIB_DIR = "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt"
+                        def VS_2015_INSTALL_DIR = 'C:/Program Files (x86)/Microsoft Visual Studio 14.0'
+                        def vsInstallDir = file(VS_2015_INSTALL_DIR)
+
+                        eachPlatform {
+                            cCompiler.withArguments { args ->
+                                if (file(VS_2015_INCLUDE_DIR).exists()) {
+                                    args << "/I$VS_2015_INCLUDE_DIR"
+                                }
+                            }
+                            linker.withArguments { args ->
+                                if (file(VS_2015_LIB_DIR).exists()) {
+                                    if (platform.architecture.name == 'x86') {
+                                        args << "/LIBPATH:$VS_2015_LIB_DIR/x86"
+                                    } else {
+                                        args << "/LIBPATH:$VS_2015_LIB_DIR/x64"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 gcc(Gcc) {
                     target("arm") {
                         cCompiler.executable = compilerPrefix + cCompiler.executable
@@ -38,6 +68,26 @@ subprojects {
                         }
                         
                         staticLibArchiver.executable = compilerPrefix + staticLibArchiver.executable
+                    }
+		    target("x64") {
+                        cCompiler.withArguments {args ->
+                            args << '-fPIC'
+                        }
+
+                        linker.withArguments { args ->
+                            args << '-shared'
+                        }
+
+                    }
+                    target("x86") {
+                        cCompiler.withArguments {args ->
+                            args << '-fPIC'
+                        }
+
+                        linker.withArguments { args ->
+                            args << '-shared'
+                        }
+
                     }
                 }
                 

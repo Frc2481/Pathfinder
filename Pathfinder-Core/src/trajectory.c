@@ -40,19 +40,29 @@ TrajectoryInfo pf_trajectory_prepare(TrajectoryConfig c) {
     return info;
 }
 
-void pf_trajectory_create(TrajectoryInfo info, TrajectoryConfig c, Segment *seg) {
-    pf_trajectory_fromSecondOrderFilter(info.filter1, info.filter2, info.dt, info.u, info.v, info.impulse, info.length, seg);
+int pf_trajectory_create(TrajectoryInfo info, TrajectoryConfig c, Segment *seg) {
+    int ret = pf_trajectory_fromSecondOrderFilter(info.filter1, info.filter2, info.dt, info.u, info.v, info.impulse, info.length, seg);
+    
+    if (ret < 0) {
+        return ret;
+    }
     
     double d_theta = c.dest_theta - c.src_theta;
     int i;
     for (i = 0; i < info.length; i++) {
         seg[i].heading = c.src_theta + d_theta * (seg[i].position) / (seg[info.length - 1].position);
     }
+    return 0;
 }
 
-void pf_trajectory_fromSecondOrderFilter(int filter_1_l, int filter_2_l, 
+int pf_trajectory_fromSecondOrderFilter(int filter_1_l, int filter_2_l, 
         double dt, double u, double v, double impulse, int len, Segment *t) {
     Segment last_section = {dt, 0, 0, 0, u, 0, 0};
+    
+    if (len < 0) {
+        // Error
+        return -1;
+    }
     
     // double f1_buffer[len];
     double *f1_buffer = malloc(len * sizeof(double));       // VS doesn't support VLAs
@@ -99,4 +109,5 @@ void pf_trajectory_fromSecondOrderFilter(int filter_1_l, int filter_2_l,
         last_section = t[i];
     }
     free(f1_buffer);
+    return 0;
 }

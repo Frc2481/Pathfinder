@@ -1,4 +1,5 @@
 #include "pathfinder.h"
+#include <stdio.h>
 
 // CONVERSIONS //
 // We're using the manual stuff instead of fwrite on a double array so these files

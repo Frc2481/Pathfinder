@@ -1,6 +1,10 @@
 #ifndef PATHFINDER_H_DEF
 #define PATHFINDER_H_DEF
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "pathfinder/mathutil.h"
 #include "pathfinder/structs.h"
 
@@ -15,5 +19,9 @@
 #include "pathfinder/followers/distance.h"
 
 #include "pathfinder/io.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
